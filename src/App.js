@@ -1,74 +1,73 @@
-import React from "react";
+import React, { useMemo, useContext } from "react";
 
 import "./styles.css";
 
-import * as HoverTable from "./HoverTable";
-import {
-  StyledTable,
-  StyledTableBody,
-  StyledCell,
-  StyledRow,
-  Point
-} from "./styles";
+import * as HoverTable from "./ActiveTable";
+import { Point } from "./styles";
 
-const MyCell = ({ isActive, isActiveColumn, isActiveRow, ...props }) => (
-  <StyledCell
-    isActiveCell={isActive}
-    isActiveColumn={isActiveColumn}
-    isActiveRow={isActiveRow}
-    {...props}
-  >
-    <Point isActive={isActive} />
-  </StyledCell>
-);
+const MyPoint = () => {
+  const { isActive } = useContext(HoverTable.CellContext);
 
-const Cell = ({ columnId, children }) => (
-  <HoverTable.Cell columnId={columnId}>{MyCell}</HoverTable.Cell>
-);
+  return useMemo(() => <Point isActive={isActive} />, [isActive]);
+};
 
-const RowOuter = props => <StyledRow {...props} />;
-
-const Row = props => <HoverTable.Row {...props} render={RowOuter} />;
-
-const Table = props => (
-  <StyledTable>
-    <StyledTableBody {...props} />
-  </StyledTable>
+const MyCell = ({ columnId }) => (
+  <HoverTable.Cell columnId={columnId}>
+    <MyPoint />
+  </HoverTable.Cell>
 );
 
 export default function App() {
   return (
     <div className="App">
       Hover over a cell
-      <HoverTable.default render={Table}>
-        <Row id="row-one">
-          <Cell columnId="column-one" />
-          <Cell columnId="column-two" />
-          <Cell columnId="column-three" />
-          <Cell columnId="column-four" />
-          <Cell columnId="column-five" />
-        </Row>
-        <Row id="row-two">
-          <Cell columnId="column-one" />
-          <Cell columnId="column-two" />
-          <Cell columnId="column-three" />
-          <Cell columnId="column-four" />
-          <Cell columnId="column-five" />
-        </Row>
-        <Row id="row-three">
-          <Cell columnId="column-one" />
-          <Cell columnId="column-two" />
-          <Cell columnId="column-three" />
-          <Cell columnId="column-four" />
-          <Cell columnId="column-five" />
-        </Row>
-        <Row id="row-four">
-          <Cell columnId="column-one" />
-          <Cell columnId="column-two" />
-          <Cell columnId="column-three" />
-          <Cell columnId="column-four" />
-          <Cell columnId="column-five" />
-        </Row>
+      <HoverTable.default>
+        <tr>
+          <td colSpan="5">
+            <HoverTable.TableContext.Consumer>
+              {({ setActiveColumn, setActiveRow }) => (
+                <>
+                  <button onClick={() => setActiveColumn("column-one")}>
+                    column 1
+                  </button>
+                  <button onClick={() => setActiveColumn("column-two")}>
+                    column 2
+                  </button>
+                  <button onClick={() => setActiveRow("row-one")}>row 1</button>
+                  <button onClick={() => setActiveRow("row-two")}>row 2</button>
+                </>
+              )}
+            </HoverTable.TableContext.Consumer>
+          </td>
+        </tr>
+        <HoverTable.Row id="row-one">
+          <MyCell columnId="column-one" />
+          <MyCell columnId="column-two" />
+          <MyCell columnId="column-three" />
+          <MyCell columnId="column-four" />
+          <MyCell columnId="column-five" />
+        </HoverTable.Row>
+        <HoverTable.Row id="row-two">
+          <MyCell columnId="column-one" />
+          <MyCell columnId="column-two" />
+          <MyCell columnId="column-three" />
+          <MyCell columnId="column-four" />
+          <MyCell columnId="column-five" />
+        </HoverTable.Row>
+        <HoverTable.Row id="row-three">
+          <MyCell columnId="column-one" />
+          <MyCell columnId="column-two" />
+          <MyCell columnId="column-three" />
+          <MyCell columnId="column-four" />
+          <MyCell columnId="column-five" />
+        </HoverTable.Row>
+        <HoverTable.Row id="row-four">
+          <MyCell columnId="column-one" />
+          <MyCell columnId="column-two" />
+          <MyCell columnId="column-three" />
+          <MyCell columnId="column-four" />
+          <MyCell columnId="column-five" />
+        </HoverTable.Row>
       </HoverTable.default>
     </div>
   );

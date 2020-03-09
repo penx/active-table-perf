@@ -13,63 +13,48 @@ export const CellContext = createContext({
   isActive: false
 });
 
-export const Table = ({
-  render = ({ children }) => (
-    <table>
-      <tbody>{children}</tbody>
-    </table>
-  ),
-  ...props
-}) => {
+export const Table = props => {
   const [activeRow, setActiveRow] = useState(null);
   const [activeColumn, setActiveColumn] = useState(null);
   return (
     <TableContext.Provider
       value={{ activeRow, setActiveRow, activeColumn, setActiveColumn }}
     >
-      {useMemo(() => render({ children: props.children }), [
-        props.children,
-        render
-      ])}
+      <table>
+        <tbody {...props} />
+      </table>
     </TableContext.Provider>
   );
 };
 
-export const Row = React.forwardRef(
-  ({ id, render = props => <tr {...props} />, ...props }, ref) => {
-    const { activeRow } = useContext(TableContext);
-    const isActiveRow = activeRow === id;
-    return (
-      <RowContext.Provider value={id}>
-        {useMemo(() => render({ ...props, isActiveRow, ref }), [
-          isActiveRow,
-          props,
-          ref,
-          render
-        ])}
-      </RowContext.Provider>
-    );
-  }
-);
+export const Row = ({ id, ...props }) => {
+  return (
+    <RowContext.Provider value={id}>
+      <tr {...props} />
+    </RowContext.Provider>
+  );
+};
 
-export const Cell = React.forwardRef(
-  ({ columnId, render = props => <td {...props} />, ...props }, ref) => {
-    const rowId = useContext(RowContext);
-    const { activeRow, activeColumn } = useContext(TableContext);
-    return (
+export const Cell = ({ columnId, children }) => {
+  const rowId = useContext(RowContext);
+  const { activeRow, activeColumn } = useContext(TableContext);
+  const isActiveColumn = columnId === activeColumn;
+  const isActiveRow = rowId === activeRow;
+  const isActive = rowId === activeRow && columnId === activeColumn;
+  return useMemo(
+    () => (
       <CellContext.Provider
         value={{
-          isActiveColumn: columnId === activeColumn,
-          isActiveRow: rowId === activeRow,
-          isActive: rowId === activeRow && columnId === activeColumn
+          isActiveColumn,
+          isActiveRow,
+          isActive
         }}
       >
-        <CellContext.Consumer>
-          {context => render({ ...props, ...context, ref })}
-        </CellContext.Consumer>
+        <td children={children} />
       </CellContext.Provider>
-    );
-  }
-);
+    ),
+    [isActiveColumn, isActiveRow, isActive, children]
+  );
+};
 
 export default Table;

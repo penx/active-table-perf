@@ -2,6 +2,7 @@
 // TODO: consider https://gist.github.com/gragland/a32d08580b7e0604ff02cb069826ca2f
 import { useRef, useState, useEffect } from "react";
 
+// Hook
 export function useHover() {
   const [value, setValue] = useState(false);
 
